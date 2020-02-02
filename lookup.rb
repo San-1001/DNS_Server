@@ -19,22 +19,22 @@ domain = get_command_line_argument
 dns_raw = File.readlines("zone")
 
 def resolve(dns_records, lookup_chain, domain)
-    if !dns_records[domain]
-      lookup_chain+=["The domain name does not exist"]
-    elsif dns_records[domain].key?("CNAME")
-      lookup_chain+=[dns_records[domain]["CNAME"]]
-      lookup_chain=resolve(dns_records, lookup_chain, dns_records[domain]["CNAME"])
-    else
-        lookup_chain += [dns_records[domain]["A"]]
-        lookup_chain
-    end
+  if !dns_records[domain]
+    lookup_chain+=["The domain name does not exist"]
+  elsif dns_records[domain].key?("CNAME")
+    lookup_chain+=[dns_records[domain]["CNAME"]]
+    lookup_chain=resolve(dns_records, lookup_chain, dns_records[domain]["CNAME"])
+  else
+    lookup_chain += [dns_records[domain]["A"]]
+    lookup_chain
+  end
 end
 def parse_dns(dns_raw)
   domains={}
-  dns_raw.each do |y|
-    if y[0]!='#' && !(y.empty?)
-        splitArr=y.strip.split(", ")
-        domains[splitArr[1]] = { splitArr[0] => splitArr[2] }
+  dns_raw.each do |dns_record|
+    if dns_record[0]!='#' && !(dns_record.empty?)
+        splitArr=dns_record.strip.split(", ")
+        domains[splitArr[1]]={ splitArr[0] => splitArr[2] }
     end
   end
   domains
